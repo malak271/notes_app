@@ -17,7 +17,7 @@ module.exports.insertNewTask=async (req,res)=>{
 module.exports.showAll=async (req,res)=>{
     try{
         console.log(req.user)
-        const tasks= await Task.find({})
+        const tasks= await Task.find({user_id:req.user._id})
         res.status(200).json(tasks)
     }catch(error){
        console.log(error.message)
@@ -65,6 +65,7 @@ module.exports.deleteByID=async (req,res)=>{
     }
 }
 
+<<<<<<< HEAD
 module.exports.insertNewSubTask = async(req,res)=>{
 
         const {id} = req.params
@@ -119,3 +120,7 @@ module.exports.deleteSubTaskByID = async(req,res)=>{
     }
     
     }
+=======
+
+//14785256
+>>>>>>> 28ff63f81129a7386d238e7a9531393415eb6523

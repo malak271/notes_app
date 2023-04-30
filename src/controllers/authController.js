@@ -4,6 +4,19 @@ const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 const {registerValidation,loginValidation}= require("../helpers/validation")
 
+const blacklist = new Set();
+
+function addToBlacklist(token) {
+  blacklist.add(token);
+}
+
+module.exports.isTokenBlacklisted= (token) =>{
+  if (blacklist.has(token)) {
+    console.log("token in blacklist")
+    return res.status(401).send({ message: 'Invalid token' });
+  }
+}
+
 module.exports.register=async(req,res)=>{
 
   //validate data before send 
@@ -44,6 +57,14 @@ module.exports.login=async (req,res)=>{
   if(!validPass) return res.status(400).send("email or password is wrong")
 
   //create and assign a token 
-  const token=jwt.sign({_id:user._id},process.env.TOKEN_SECRET)
+  const token=jwt.sign({_id:user._id},process.env.TOKEN_SECRET, {algorithm: "HS256"})
   res.header('auth_token',token).send(token)
 }
+
+module.exports.logout = async (req, res) => {
+  // const authHeader = req.header("Authorization");
+  // const token = authHeader.split(' ')[1];
+  const token = req.header("auth_token");
+  addToBlacklist(token)
+  res.status(200).send("ok")
+};
