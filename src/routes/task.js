@@ -7,15 +7,15 @@ const TaskController=require("../controllers/taskController")
 //     res.json(req.user)
 // })
 
-router.post('/task',verify,TaskController.insertNewTask)
+router.post('/task',TaskController.insertNewTask)
 
-router.get('/tasks',verify,TaskController.showAll)
+router.get('/tasks',TaskController.showAll)
 
-router.get('/task/:id',verify,TaskController.showByID)
+router.get('/task/:id',TaskController.showByID)
 
-router.put('/task/update/:id',verify,TaskController.updateByID)
+router.put('/task/update/:id',TaskController.updateByID)
 
-router.delete('/task/delete/:id',verify,TaskController.deleteByID)
+router.delete('/task/delete/:id',TaskController.deleteByID)
 
 
 module.exports=router
