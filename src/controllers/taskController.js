@@ -65,7 +65,6 @@ module.exports.deleteByID=async (req,res)=>{
     }
 }
 
-<<<<<<< HEAD
 module.exports.insertNewSubTask = async(req,res)=>{
 
         const {id} = req.params
@@ -74,10 +73,8 @@ module.exports.insertNewSubTask = async(req,res)=>{
 
     const task = await Task.findById(id)
 
-    var index = 1
-    task.subtasks.splice(index,0,subTask)
+    task.subtasks.push(index,0,subTask)
 
-        index = index + 1
 
         res.status(200).json(task)
 
@@ -120,7 +117,58 @@ module.exports.deleteSubTaskByID = async(req,res)=>{
     }
     
     }
-=======
 
-//14785256
->>>>>>> 28ff63f81129a7386d238e7a9531393415eb6523
+
+    module.exports.taskCompleted = async(req,res)=>{
+
+
+        const {taskid} = req.params
+
+        const task = await Task.findById(taskid)
+
+
+     const completedsubtasks= task.subtasks.every(subtask=>subtask.completed)
+
+     if(!completedsubtasks){
+
+        res.status(500).json("not all sub tasks are completed")
+
+     }
+
+
+     const filter = { _id: taskid };
+     
+     const update = { $set: { completed: 'true' } };
+     
+     const result = await Task.updateOne(filter, update)
+
+     const completedTask = await Task.findById(taskid)
+     
+     res.status(200).json(completedTask)
+
+     /*
+     const completedTask = await Task.findByIdAndUpdate(taskid,req.body)
+     res.status(200).json("task with id ${taskid}  completed")
+*/
+
+    }
+
+    module.exports.subTaskCompleted = async(req,res)=>{
+       try{
+        const {taskid} = req.params.taskid
+        const {subtaskid} = req.params.subtaskid
+        const subTask = req.body 
+    
+    
+        const task = await Task.findById(taskid)
+    
+      const subtask= task.subtasks.findByIdAndUpdate(subtaskid)
+     
+      res.status(200).json(subtask)
+    }catch(error){
+       console.log(error.message)
+       res.status(500).json({message:error.message})
+    }
+
+
+    }

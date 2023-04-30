@@ -13,12 +13,8 @@ router.get('/tasks',TaskController.showAll)
 
 router.get('/task/:id',TaskController.showByID)
 
-<<<<<<< HEAD
 
 router.put('/task/update/:id',verify,TaskController.updateByID)
-=======
-router.put('/task/update/:id',TaskController.updateByID)
->>>>>>> 28ff63f81129a7386d238e7a9531393415eb6523
 
 router.delete('/task/delete/:id',TaskController.deleteByID)
 
@@ -26,6 +22,8 @@ router.delete('/task/delete/:id',TaskController.deleteByID)
 router.post('/subTask/:id',verify,TaskController.insertNewSubTask)
 router.post('/updatesubTask/:taskid/:subtaskid',verify,TaskController.updateSubTaskByID)
 router.post('/deletesubTask/:taskid/:subtaskid',verify,TaskController.deleteSubTaskByID)
+router.post('/completedTask/:taskid',verify,TaskController.taskCompleted)
+router.post('/completedSubTask/:taskid/:subtaskid',verify,TaskController.subTaskCompleted)
 
 
 
