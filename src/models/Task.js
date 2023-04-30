@@ -32,8 +32,8 @@ const TaskSchema = mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
-        completed: {
-          type: Boolean,
+        CompletionPercentage: {
+          type: Number,
           default: false
         },
         dueDate: Date,
