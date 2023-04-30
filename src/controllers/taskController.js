@@ -65,5 +65,8 @@ module.exports.deleteByID=async (req,res)=>{
     }
 }
 
+module.exports.calculateTaskCompletionPercentage()=()=>{
+    
+}
 
 //14785256
