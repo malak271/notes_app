@@ -16,10 +16,11 @@ module.exports.insertNewTask = async (req, res) => {
 
 module.exports.showAll = async (req, res) => {
     try {
-        console.log(req.user)
         const tasks = await Task.find({ user_id: req.user._id })
+        const x= calculateOverallCompletionPercentage(tasks)
+        const y= calculateCompletionPercentagePerDay(tasks)
+        res.status(200).json({"tasks":tasks,"OverallCompletionPercentage":x,"OverallCompletionPercentagePerDay":y})
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: error.message })
     }
 }
@@ -172,3 +173,61 @@ module.exports.subTaskCompleted = async (req, res) => {
 
 }
 //14785256
+module.exports.calculateTaskCompletionPercentage = async (req, res) => { //send task id with request
+    try {
+        const { id } = req.params
+        const task = await Task.findById(id)
+        const subtasks = task.subtasks;
+        const totalSubtasks = subtasks.length;
+
+        // if (totalSubtasks === 0) {
+        //     return task.completed ? 100 : 0;
+        // }
+
+        const completedSubtasks = subtasks.filter(subtask => subtask.completed);
+        const completedSubtasksCount = completedSubtasks.length;
+
+        const subtasksCompletionPercentage = completedSubtasksCount / totalSubtasks;
+
+        res.status(200).json({ CompletionPercentage: Math.round(subtasksCompletionPercentage * 100) })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: error.message })
+    }
+    //update completion percentage in db
+}
+
+calculateOverallCompletionPercentage =  (tasks) => {
+
+    // calculate the sum of all completion percentages
+    const sumCompletionPercentages = tasks.reduce((sum, task) => {
+        return sum + task.completionPercentage
+    }, 0);
+
+    console.log(sumCompletionPercentages)
+    // calculate the total weight (i.e., sum of all completion percentages)
+    const overallCompletionPercentage = (sumCompletionPercentages / (tasks.length*100))*100;
+
+    return overallCompletionPercentage;
+
+}
+
+
+calculateCompletionPercentagePerDay = (tasks) => { 
+// Group the tasks by date
+const length=( tasks.flatMap(item => item.subtasks).length)
+
+const tasksByDate = tasks.flatMap(item => item.subtasks).reduce((acc, task) => {
+
+    if(task.completionDate==null)return acc;
+    const completionDate = task.completionDate.toISOString();
+    const dateOnly = completionDate.substring(0, completionDate.indexOf('T'));
+    if (!acc[dateOnly]) {
+      acc[dateOnly] = [];
+    }
+    acc[dateOnly].push(task);
+    return acc;
+
+  }, {});
+
+}
