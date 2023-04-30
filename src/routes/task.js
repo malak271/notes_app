@@ -13,9 +13,16 @@ router.get('/tasks',verify,TaskController.showAll)
 
 router.get('/task/:id',verify,TaskController.showByID)
 
+
 router.put('/task/update/:id',verify,TaskController.updateByID)
 
 router.delete('/task/delete/:id',verify,TaskController.deleteByID)
+
+
+router.post('/subTask/:id',verify,TaskController.insertNewSubTask)
+router.post('/updatesubTask/:taskid/:subtaskid',verify,TaskController.updateSubTaskByID)
+router.post('/deletesubTask/:taskid/:subtaskid',verify,TaskController.deleteSubTaskByID)
+
 
 
 module.exports=router

@@ -64,3 +64,58 @@ module.exports.deleteByID=async (req,res)=>{
        res.status(500).json({message:error.message})
     }
 }
+
+module.exports.insertNewSubTask = async(req,res)=>{
+
+        const {id} = req.params
+
+        const subTask = req.body 
+
+    const task = await Task.findById(id)
+
+    var index = 1
+    task.subtasks.splice(index,0,subTask)
+
+        index = index + 1
+
+        res.status(200).json(task)
+
+}
+
+module.exports.updateSubTaskByID = async(req,res)=>{
+try{
+    const {taskid} = req.params.taskid
+    const {subtaskid} = req.params.subtaskid
+    const subTask = req.body 
+
+
+    const task = await Task.findById(taskid)
+
+  const subtask= task.subtasks.findByIdAndUpdateById(subtaskid,req.body)
+ 
+  res.status(200).json(subtask)
+}catch(error){
+   console.log(error.message)
+   res.status(500).json({message:error.message})
+}
+
+}
+
+module.exports.deleteSubTaskByID = async(req,res)=>{
+    try{
+        const {taskid} = req.params.taskid
+        const {subtaskid} = req.params.subtaskid
+        const subTask = req.body 
+    
+    
+        const task = await Task.findById(taskid)
+    
+      const subtask= task.subtasks.findByIdAndDelete(subtaskid)
+     
+      res.status(200).json(subtask)
+    }catch(error){
+       console.log(error.message)
+       res.status(500).json({message:error.message})
+    }
+    
+    }
