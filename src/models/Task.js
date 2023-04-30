@@ -15,7 +15,8 @@ const subtaskSchema = mongoose.Schema({
       message: 'Value must be either 0 or 1'
     },
     default:0
-  }
+  },
+  completionDate: {type:Date,default:null},
 })
 
 const TaskSchema = mongoose.Schema(
@@ -32,11 +33,16 @@ const TaskSchema = mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
-        CompletionPercentage: {
+        completionPercentage: {
+          type: Number,
+          default: false
+        },
+        completionPercentagePerDay: {
           type: Number,
           default: false
         },
         dueDate: Date,
+        completionDate: {type:Date,default:null},
         subtasks: [subtaskSchema]
       },
       {

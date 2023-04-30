@@ -17,5 +17,7 @@ router.put('/task/update/:id',TaskController.updateByID)
 
 router.delete('/task/delete/:id',TaskController.deleteByID)
 
+router.get('/calculateTaskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
+
 
 module.exports=router
