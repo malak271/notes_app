@@ -20,4 +20,12 @@ router.delete('/task/delete/:id',TaskController.deleteByID)
 router.get('/calculateTaskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
 
+router.post('/subTask/:id',verify,TaskController.insertNewSubTask)
+router.post('/updatesubTask/:taskid/:subtaskid',verify,TaskController.updateSubTaskByID)
+router.post('/deletesubTask/:taskid/:subtaskid',verify,TaskController.deleteSubTaskByID)
+router.post('/completedTask/:taskid',verify,TaskController.taskCompleted)
+router.post('/completedSubTask/:taskid/:subtaskid',verify,TaskController.subTaskCompleted)
+
+
+
 module.exports=router

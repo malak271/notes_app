@@ -7,7 +7,5 @@ router.post('/register',AuthController.register);
 
 router.post('/login',AuthController.login)
 
-router.post('/logout',verify,AuthController.logout)
-
-
 module.exports=router;
+//router.:instead of app. , by require('express').Router()
