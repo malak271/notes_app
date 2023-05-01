@@ -1,6 +1,7 @@
 const router=require('express').Router()
 const verify=require('../helpers/verifyToken')
 const TaskController=require("../controllers/taskController")
+const subTaskController=require("../controllers/subtaskController")
 
 
 // router.get('/test',verify,(req,res)=>{
@@ -21,11 +22,11 @@ router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletio
 
 router.get('/completionPerDay/',TaskController.calculateCompletionPercentagePerDay)
 
-router.post('/subTask/:id',verify,TaskController.insertNewSubTask)
-router.post('/updatesubTask/:taskid/:subtaskid',verify,TaskController.updateSubTaskByID)
-router.delete('/deletesubTask/:taskid/:subtaskid',verify,TaskController.deleteSubTaskByID)
-router.put('/completedTask/:taskid',verify,TaskController.checksubTasktocomletedtask)
-router.put('/completedSubTask/:taskid/:subtaskid',verify,TaskController.subTaskCompleted)
+router.post('/subTask/:id',verify,subTaskController.insertNewSubTask)
+router.post('/updatesubTask/:taskid/:subtaskid',verify,subTaskController.updateSubTaskByID)
+router.delete('/deletesubTask/:taskid/:subtaskid',verify,subTaskController.deleteSubTaskByID)
+router.put('/completedTask/:taskid',verify,subTaskController.checksubTasktocomletedtask)
+router.put('/completedSubTask/:taskid/:subtaskid',verify,subTaskController.subTaskCompleted)
 
 
 
