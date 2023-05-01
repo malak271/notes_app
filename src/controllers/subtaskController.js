@@ -1,136 +1,138 @@
-const Task = require("../models/Task")
 
-module.exports.insertNewSubTask = async (req, res) => {
+module.exports.insertNewSubTask = async(req,res)=>{
 
-  const { id } = req.params
+  const {id} = req.params
 
 
-  const task = await Task.findById(id)
+const task = await Task.findById(id)
 
-  task.subtasks.push(req.body)
+task.subtasks.push(req.body)
 
-  const filter = { _id: id };
+const filter = { _id: id };
 
-  const update = { $set: { subtasks: req.body } };
+const update = { $set: { subtasks: req.body } };
 
-  const result = await Task.updateOne(filter, update)
+const result = await Task.updateOne(filter, update)
 
 
   res.status(200).json(task)
 
 }
 
-module.exports.updateSubTaskByID = async (req, res) => {
+//done
+module.exports.updateSubTaskByID = async(req,res)=>{
 
-  const taskid = req.params.taskid
-  const subtaskid = req.params.subtaskid
+const taskid = req.params.taskid
+const subtaskid = req.params.subtaskid
 
-  const task = await Task.findById(taskid)
-
-
-  if (task && task.subtasks) {
+const task= await Task.findById(taskid)
 
 
-    const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
-    //indexed array
+if(task && task.subtasks){
 
 
-
-    console.log(subtask)
-
-    if (req.body.title)
-      subtask[0].title = req.body.title
+const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
+//indexed array
 
 
 
-    if (req.body.description)
+console.log(subtask)
 
-      console.log('done')
-    subtask[0].description = req.body.description
-
-
-    console.log(subtask[0].description)
-    console.log(subtask)
+if(req.body.title)
+subtask[0].title = req.body.title
 
 
 
+if(req.body.description)
 
-    if (req.body.completed)
-
-      subtask[0].completed = req.body.completed
-
-
-    console.log(task)
-
-    task.save()
+console.log('done')
+subtask[0].description = req.body.description
 
 
-    res.status(200).json("found")
+console.log(subtask[0].description)
+console.log(subtask)
 
-  }
+
+
+
+if(req.body.completed)
+
+subtask[0].completed = req.body.completed
+
+
+console.log(task)
+
+task.save()
+
+
+res.status(200).json("found")
+
+}
 
 
 }
 
-module.exports.deleteSubTaskByID = async (req, res) => {
+//done
+module.exports.deleteSubTaskByID = async(req,res)=>{
 
   const taskid = req.params.taskid
-  const subtaskid = req.params.subtaskid
+const subtaskid = req.params.subtaskid
 
-  console.log(subtaskid)
-
-
-  const task = await Task.findById(taskid)
+console.log(subtaskid)
 
 
-  if (task && task.subtasks) {
-
-    // console.log(task.subtasks)
+const task= await Task.findById(taskid)
 
 
-    const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid)
+if(task && task.subtasks){
 
-    console.log(subtask)
-
-    await Task.findByIdAndUpdate(taskid, { $pull: { subtasks: subtask[0] } }, { new: true })
+// console.log(task.subtasks)
 
 
-    const utatask = Task.findById(taskid)
-    res.status(200).json(utatask)
+const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid)
+
+console.log(subtask)
+
+await Task.findByIdAndUpdate(taskid,{$pull : { subtasks : subtask[0] }} , {new:true})
 
 
-  }
+const utatask = Task.findById(taskid)
+res.status(200).json(utatask)
+
 
 }
 
-module.exports.checksubTasktocomletedtask = async (req, res) => {
+}
+
+//done
+module.exports.checksubTasktocomletedtask = async(req,res)=>{
 
 
-  const { taskid } = req.params
+  const {taskid} = req.params
 
   const task = await Task.findById(taskid)
 
 
-  const completedsubtasks = await task.subtasks.every(subtask => subtask.completed === 1)
+const completedsubtasks= await task.subtasks.every(subtask=>subtask.completed === 1)
+
+console.log(completedsubtasks)
+
+if(completedsubtasks){
 
   console.log(completedsubtasks)
 
-  if (completedsubtasks) {
+const filter = { _id: taskid };
 
-    console.log(completedsubtasks)
+const update = { $set: { completed: 'true'} };
 
-    const filter = { _id: taskid };
+const result = await Task.updateOne(filter, update)
 
-    const update = { $set: { completed: 'true' } };
+const completedTask = await Task.findById(taskid)
 
-    const result = await Task.updateOne(filter, update)
+res.status(200).json(completedTask)
+}
 
-    const completedTask = await Task.findById(taskid)
-
-    res.status(200).json(completedTask)
-  }
-
-  res.status(500).json("not all sub tasks are completed")
+res.status(500).json("not all sub tasks are completed")
 
 
 }
@@ -159,30 +161,30 @@ res.status(200).json(completedTask)
 }
 */
 
-module.exports.subTaskCompleted = async (req, res) => {
-  try {
-    const taskid = req.params.taskid
-    const subtaskid = req.params.subtaskid
-    const subTask = req.body
+module.exports.subTaskCompleted = async(req,res)=>{
+ try{
+  const taskid = req.params.taskid
+  const subtaskid = req.params.subtaskid
+  const subTask = req.body 
 
 
-    const task = await Task.findById(taskid)
+  const task = await Task.findById(taskid)
 
-    const subtask = task.subtasks.filter(subtask => subtask.subtaskId == subtaskid)
+const subtask= task.subtasks.filter(subtask=>subtask.subtaskId == subtaskid )
 
 
-    console.log(subtask)
+console.log(subtask)
 
     subtask[0].completed = true
 
 
     task.save()
 
-    res.status(200).json(subtask)
-  } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ message: error.message })
-  }
+res.status(200).json(subtask)
+}catch(error){
+ console.log(error.message)
+ res.status(500).json({message:error.message})
+}
 
 
 }
