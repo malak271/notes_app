@@ -230,4 +230,15 @@ const tasksByDate = tasks.flatMap(item => item.subtasks).reduce((acc, task) => {
 
   }, {});
 
+
+//   console.log(tasksByDate)
+  
+//   Calculate the average completion rate for each date
+  const averageCompletionRatesPerDay = Object.entries(tasksByDate).map(([date, tasks]) => {
+    const totalCompletionRate = tasks.reduce((acc, task) => acc + task.completed, 0);
+    const averageCompletionRate = totalCompletionRate / length * 100;
+    return { date, averageCompletionRate };
+  });
+
+  return(averageCompletionRatesPerDay)
 }
