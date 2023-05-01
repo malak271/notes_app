@@ -37,10 +37,6 @@ const TaskSchema = mongoose.Schema(
           type: Number,
           default: false
         },
-        completionPercentagePerDay: {
-          type: Number,
-          default: false
-        },
         dueDate: Date,
         completionDate: {type:Date,default:null},
         subtasks: [subtaskSchema]
