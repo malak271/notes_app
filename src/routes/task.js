@@ -7,17 +7,19 @@ const TaskController=require("../controllers/taskController")
 //     res.json(req.user)
 // })
 
-router.post('/task',TaskController.insertNewTask)
+router.post('/store',TaskController.insertNewTask)
 
 router.get('/tasks',TaskController.showAll)
 
-router.get('/task/:id',TaskController.showByID)
+router.get('/show/:id',TaskController.showByID)
 
+router.put('/update/:id',TaskController.updateByID)
 
-router.put('/task/update/:id',verify,TaskController.updateByID)
+router.delete('/delete/:id',TaskController.deleteByID)
 
-router.delete('/task/delete/:id',TaskController.deleteByID)
+router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
+router.get('/completionPerDay/',TaskController.calculateCompletionPercentagePerDay)
 
 router.post('/subTask/:id',verify,TaskController.insertNewSubTask)
 router.post('/updatesubTask/:taskid/:subtaskid',verify,TaskController.updateSubTaskByID)

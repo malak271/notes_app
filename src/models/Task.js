@@ -1,7 +1,7 @@
 const mongoose=require("mongoose");
 
 const subtaskSchema = mongoose.Schema({
-  subtaskId: { type: Number, required: true, unique: true },
+  // subtaskId: { type: Number, required: true, unique: true },
   description: {
     type: String,
     required: true,
@@ -15,7 +15,8 @@ const subtaskSchema = mongoose.Schema({
       message: 'Value must be either 0 or 1'
     },
     default:0
-  }
+  },
+  completionDate: {type:Date,default:null},
 })
 
 const TaskSchema = mongoose.Schema(
@@ -32,11 +33,12 @@ const TaskSchema = mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
-        completed: {
-          type: Boolean,
+        completionPercentage: {
+          type: Number,
           default: false
         },
         dueDate: Date,
+        completionDate: {type:Date,default:null},
         subtasks: [subtaskSchema]
       },
       {
