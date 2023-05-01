@@ -1,4 +1,3 @@
-const router = require('express').Router()
 const Task = require("../models/Task")
 const {overallCompletionPercentage}=require("../helpers/calculation")
 
@@ -67,32 +66,6 @@ module.exports.deleteByID = async (req, res) => {
 }
 
 //14785256
-module.exports.calculateTaskCompletionPercentage = async (req, res) => { //send task id with request
-    try {
-        const { id } = req.params
-        const task = await Task.findById(id)
-        const subtasks = task.subtasks;
-        const totalSubtasks = subtasks.length;
-
-        // if (totalSubtasks === 0) {
-        //     return task.completed ? 100 : 0;
-        // }
-
-        const completedSubtasks = subtasks.filter(subtask => subtask.completed);
-        const completedSubtasksCount = completedSubtasks.length;
-
-        const subtasksCompletionPercentage = completedSubtasksCount / totalSubtasks;
-
-        const x = Math.round(subtasksCompletionPercentage * 100)
-        task.completionPercentage = x;
-        await task.save();
-
-        res.status(200).json({ CompletionPercentage: Math.round(subtasksCompletionPercentage * 100) })
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json({ message: error.message })
-    }
-}
 
 module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
     try {
