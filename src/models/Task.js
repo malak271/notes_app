@@ -1,7 +1,7 @@
 const mongoose=require("mongoose");
 
 const subtaskSchema = mongoose.Schema({
-  subtaskId: { type: Number, required: true, unique: true },
+  // subtaskId: { type: Number, required: true, unique: true },
   description: {
     type: String,
     required: true,
