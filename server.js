@@ -1,6 +1,5 @@
 const express=require("express")
 const mongoose=require("mongoose")
-const Task=require("./src/models/Task")
 const app=express()
 const dotenv=require("dotenv")
 const verify=require('./src/helpers/verifyToken')
