@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const Task = require("../models/Task")
+const {overallCompletionPercentage}=require("../helpers/calculation")
 
 module.exports.insertNewTask = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ module.exports.insertNewTask = async (req, res) => {
 module.exports.showAll = async (req, res) => {
     try {
         const tasks = await Task.find({ user_id: req.user._id })
-        const x = calculateOverallCompletionPercentage(tasks)
+        const x = overallCompletionPercentage(tasks)
         // const y= calculateCompletionPercentagePerDay(tasks)
         res.status(200).json({ "tasks": tasks, "OverallCompletionPercentage": x })
     } catch (error) {
@@ -73,8 +74,9 @@ module.exports.insertNewSubTask = async (req, res) => {
 
     const task = await Task.findById(id)
 
-    task.subtasks.push(index, 0, subTask)
+    task.subtasks.push(subTask)
 
+    await task.save()
 
     res.status(200).json(task)
 
@@ -199,22 +201,6 @@ module.exports.calculateTaskCompletionPercentage = async (req, res) => { //send 
         res.status(500).json({ message: error.message })
     }
 }
-
-calculateOverallCompletionPercentage = (tasks) => {
-
-    // calculate the sum of all completion percentages
-    const sumCompletionPercentages = tasks.reduce((sum, task) => {
-        return sum + task.completionPercentage
-    }, 0);
-
-    console.log(sumCompletionPercentages)
-    // calculate the total weight (i.e., sum of all completion percentages)
-    const overallCompletionPercentage = (sumCompletionPercentages / (tasks.length * 100)) * 100;
-
-    return overallCompletionPercentage;
-
-}
-
 
 module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
     try {
