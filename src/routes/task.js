@@ -18,7 +18,7 @@ router.put('/update/:id',TaskController.updateByID)
 
 router.delete('/delete/:id',TaskController.deleteByID)
 
-router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
+// router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
 router.get('/completionPerDay/',TaskController.calculateCompletionPercentagePerDay)
 

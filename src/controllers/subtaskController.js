@@ -170,6 +170,7 @@ module.exports.subTaskCompleted = async(req,res)=>{
     const task = await Task.findById(taskid)
     const subtask= task.subtasks.filter(subtask=>subtask.subtaskId == subtaskid )
 
+
   console.log(subtask)
   
       subtask[0].completed = true
