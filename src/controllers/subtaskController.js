@@ -1,21 +1,22 @@
+const router=require('express').Router()
+const Task=require("../models/Task")
+const mongoose=require("mongoose");
+
+const calculation = require("../helpers/calculation")
+
+
 
 module.exports.insertNewSubTask = async(req,res)=>{
-
-    const {id} = req.params
-
+const {id} = req.params
 
 const task = await Task.findById(id)
-
-  task.subtasks.push(req.body)
-
-  const filter = { _id: id };
-
-  const update = { $set: { subtasks: req.body } };
-  
-  const result = await Task.updateOne(filter, update)
+task.subtasks.push(req.body)
 
 
-    res.status(200).json(task)
+  task.save()
+  console.log(task)
+
+  res.status(200).json(task)
 
 }
 
@@ -25,43 +26,30 @@ module.exports.updateSubTaskByID = async(req,res)=>{
 const taskid = req.params.taskid
 const subtaskid = req.params.subtaskid
 
-const task= await Task.findById(taskid)
 
+const task= await Task.findById(taskid)
 
 if(task && task.subtasks){
 
-
-const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
+  const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
 //indexed array
-
-
 
 console.log(subtask)
 
 if(req.body.title)
   subtask[0].title = req.body.title
 
-  
-
  if(req.body.description)
-
- console.log('done')
   subtask[0].description = req.body.description
- 
 
-  console.log(subtask[0].description)
-  console.log(subtask)
-
-
-
+  if(req.body.subtaskId)
+   subtask[0].subtaskId = req.body.subtaskId
   
   if(req.body.completed)
 
   subtask[0].completed = req.body.completed
 
-  
   console.log(task)
-
   task.save()
  
 
@@ -80,14 +68,9 @@ const subtaskid = req.params.subtaskid
 
 console.log(subtaskid)
 
-
 const task= await Task.findById(taskid)
 
-
 if(task && task.subtasks){
-
-// console.log(task.subtasks)
-
 
 const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid)
 
@@ -97,29 +80,27 @@ await Task.findByIdAndUpdate(taskid,{$pull : { subtasks : subtask[0] }} , {new:t
  
 
 const utatask = Task.findById(taskid)
-res.status(200).json(utatask)
+res.status(200).json("done")
 
 
 }
 
 }
 
-//done
+//completion percentage added 
 module.exports.checksubTasktocomletedtask = async(req,res)=>{
 
+const {taskid} = req.params
 
-    const {taskid} = req.params
+const task = await Task.findById(taskid)
 
-    const task = await Task.findById(taskid)
-
-
- const completedsubtasks= await task.subtasks.every(subtask=>subtask.completed === 1)
+const completedsubtasks= await task.subtasks.every(subtask=>subtask.completed === 1)
 
  console.log(completedsubtasks)
 
  if(completedsubtasks){
 
-    console.log(completedsubtasks)
+  console.log(completedsubtasks)
 
  const filter = { _id: taskid };
 
@@ -130,6 +111,11 @@ module.exports.checksubTasktocomletedtask = async(req,res)=>{
  const completedTask = await Task.findById(taskid)
  
  res.status(200).json(completedTask)
+
+ const calcresult = calculation.overallCompletionPercentage(task)
+
+task.completionPercentage = calcresult
+
  }
 
  res.status(500).json("not all sub tasks are completed")
@@ -137,30 +123,43 @@ module.exports.checksubTasktocomletedtask = async(req,res)=>{
 
 }
 
-/*
+//completion percentage added 
 module.exports.comletedtask = async(req,res)=>{
 
-
- const {taskid} = req.params
+const {taskid} = req.params
 
 const task = await Task.findById(taskid)
 
 
- const filter = { _id: taskid };
+//update every subtask of subtasks
+ const subtaskUpdates = task.subtasks.map(subtask => ({
+  updateMany: {
+    filter: { 'subtasks._id': subtask._id },
+    update: { $set: { 'subtasks.$.completed': 1 } }
+  }
+}));
 
- const update = { $set: { completed: 'true' } };
+//update on DB
+
+Task.bulkWrite(subtaskUpdates)
+  .then(result => {
+    console.log('Subtasks updated:', result);
+  })
+  .catch(err => {
+    console.error('Error updating subtasks:', err);
+  });
+
+  // update completion percentage after update all subtasks
+  const result = calculation.overallCompletionPercentage(task)
+
+task.completionPercentage = result
+
+
  
- const result = await Task.updateOne(filter, update)
-
- const completedTask = await Task.findById(taskid)
-
-
- //اغير قيم ال subtask
- 
- res.status(200).json(completedTask)
 }
-*/
 
+//done
+//completion date added 
 module.exports.subTaskCompleted = async(req,res)=>{
    try{
     const taskid = req.params.taskid
@@ -169,14 +168,12 @@ module.exports.subTaskCompleted = async(req,res)=>{
 
 
     const task = await Task.findById(taskid)
-
-  const subtask= task.subtasks.filter(subtask=>subtask.subtaskId == subtaskid )
- 
+    const subtask= task.subtasks.filter(subtask=>subtask.subtaskId == subtaskid )
 
   console.log(subtask)
   
       subtask[0].completed = true
-
+      subtask[0].completionDate = Date.now()
 
       task.save()
 
