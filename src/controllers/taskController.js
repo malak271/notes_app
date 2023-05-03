@@ -1,5 +1,6 @@
 const Task = require("../models/Task")
-const {overallCompletionPercentage}=require("../helpers/calculation")
+const { overallCompletionPercentage } = require("../helpers/calculation");
+const { json } = require("express");
 
 module.exports.insertNewTask = async (req, res) => {
     try {
@@ -7,7 +8,7 @@ module.exports.insertNewTask = async (req, res) => {
         req.body.user_id = req.user._id;
         console.log(req.body)
         const task = await Task.create(req.body)
-        res.status(200).json(task)
+        res.status(200).json({ message: "task added successfully" })
     } catch (error) {
         console.log(error.message)
         res.status(500).json({ message: error.message })
@@ -72,10 +73,24 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
         // Group the tasks by date
         const tasks = await Task.find({ user_id: req.user._id })
 
-        const length = (tasks.flatMap(item => item.subtasks).length)
+        length=tasks.length
 
-        const tasksByDate = tasks.flatMap(item => item.subtasks).reduce((acc, task) => {
+        tasksByDate = tasks.flatMap(item => {
+            if (item.subtasks.length == 0 & item.completionPercentage == 100)
+                return [ {
+                    "description": item.description,
+                    "_id": item._id,
+                    "completionDate":item.completionDate,
+                    "completed":1
+                     }]
 
+            item.subtasks.forEach(element => {
+                element.completed=1/item.subtasks.length
+            });
+            return item.subtasks
+        });
+
+        tasksByDate=tasksByDate.reduce((acc, task) => {
             if (task.completionDate == null) return acc;
             const completionDate = task.completionDate.toISOString();
             const dateOnly = completionDate.substring(0, completionDate.indexOf('T'));
@@ -87,13 +102,12 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
 
         }, {});
 
-
-        //   console.log(tasksByDate)
+        console.log(tasksByDate)
 
         //   Calculate the average completion rate for each date
         const averageCompletionRatesPerDay = Object.entries(tasksByDate).map(([date, tasks]) => {
             const totalCompletionRate = tasks.reduce((acc, task) => acc + task.completed, 0);
-            const averageCompletionRate = totalCompletionRate / length * 100;
+            const averageCompletionRate = (totalCompletionRate) / length * 100;
             return { date, averageCompletionRate };
         });
         res.status(200).json({ "averageCompletionRatesPerDay": averageCompletionRatesPerDay })

@@ -16,7 +16,7 @@ module.exports.overallCompletionPercentage = (tasks) => {
 }
 
 
-module.exports.calculateTaskCompletionPercentage =  (task) => { //send task id with request
+module.exports.calculateTaskCompletionPercentage =  (task) => { 
     try {
         // const { id } = req.params
         // const task = await Task.findById(id)
