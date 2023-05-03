@@ -188,3 +188,27 @@ module.exports.subTaskCompleted = async(req,res)=>{
 }
 
 
+module.exports.subtaskCancel = async(req,res)=>{
+
+    const taskid = req.params.taskid
+    const subtaskid = req.params.subtaskid
+
+
+
+    const task = Task.findById(taskid)
+
+  
+    const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
+
+    //console.log(subtask)
+
+    subtask.softdelete = Date.now()
+    subtask.cancelled = "subtask has been cancelled"
+
+    task.save()
+
+   res.status(200).json(subtask)
+
+
+}
+
