@@ -102,3 +102,20 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+
+module.exports.cancelTask = async(req,res)=>{
+
+
+    const {id} = req.params
+
+    const task = await Task.findById(id)
+
+    task.softdelete = Date.now()
+    task.cancelled = "task has been cancelled"
+
+    task.save()
+
+   res.status(200).json(task)
+
+
+}
