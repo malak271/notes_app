@@ -85,7 +85,7 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
                      }]
 
             item.subtasks.forEach(element => {
-                element.completed=1/item.subtasks.length
+                element.completed=1/item.subtasks.length //subtask weight at the level of all tasks
             });
             return item.subtasks
         });
@@ -94,10 +94,10 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
             if (task.completionDate == null) return acc;
             const completionDate = task.completionDate.toISOString();
             const dateOnly = completionDate.substring(0, completionDate.indexOf('T'));
-            if (!acc[dateOnly]) {
+            if (!acc[dateOnly]) { //if the date is new add new row to the array
                 acc[dateOnly] = [];
             }
-            acc[dateOnly].push(task);
+            acc[dateOnly].push(task); 
             return acc;
 
         }, {});
@@ -110,6 +110,7 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
             const averageCompletionRate = (totalCompletionRate) / length * 100;
             return { date, averageCompletionRate };
         });
+        
         res.status(200).json({ "averageCompletionRatesPerDay": averageCompletionRatesPerDay })
     } catch (error) {
         console.log(error.message)
