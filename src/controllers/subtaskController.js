@@ -168,7 +168,7 @@ module.exports.subtaskCancel = async(req,res)=>{
     const taskid = req.params.taskid
     const subtaskid = req.params.subtaskid
     const task = Task.findById(taskid)
-    const subtask = await task.subtasks.filter(subtask => subtask.subtaskId == subtaskid) //return array of one object
+    const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid) //return array of one object
 
     //console.log(subtask)
     subtask.softdelete = Date.now()
