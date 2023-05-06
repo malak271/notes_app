@@ -123,6 +123,7 @@ module.exports.comletedtask = async (req, res) => {
 
   // console.log(result)
   task.completionPercentage = 100
+  task.completionDate=Date.now();
   task.save()
   res.status(200).json(task)
 
