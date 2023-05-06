@@ -18,6 +18,18 @@ const subtaskSchema = mongoose.Schema({
     default:0
   },
   completionDate: {type:Date,default:null},
+
+  softdelete : {
+    type : Date,
+    default : null 
+  } ,
+
+  cancelled : {
+    type : String ,
+    default : null 
+  }
+
+
 })
 
 const TaskSchema = mongoose.Schema(
@@ -40,11 +52,23 @@ const TaskSchema = mongoose.Schema(
         },
         dueDate: Date,
         completionDate: {type:Date,default:null},
-        subtasks: [subtaskSchema]
+        subtasks: [subtaskSchema],
+        softdelete : {
+          type : Date,
+          default : null 
+        } ,
+
+        cancelled : {
+          type : String ,
+          default : null 
+        }
+      
       },
       {
         timestamps: true,
-      }
+      },
+
+
 );
 
 const Task= mongoose.model("Task", TaskSchema);

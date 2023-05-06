@@ -17,6 +17,7 @@ router.get('/show/:id',TaskController.showByID)
 router.put('/update/:id',TaskController.updateByID)
 
 router.delete('/delete/:id',TaskController.deleteByID)
+router.put('/cancelTask/:id',TaskController.cancelTask) //cancel task
 
 // router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
@@ -29,6 +30,7 @@ router.delete('/deletesubTask/:taskid/:subtaskid',verify,subTaskController.delet
 router.put('/completedTask/:taskid',verify,subTaskController.checksubTasktocomletedtask)//complete task by check completed subtasl
 router.put('/completedSubTask/:taskid/:subtaskid',verify,subTaskController.subTaskCompleted) //complete subtask
 router.put('/completedAllTasks/:taskid',verify,subTaskController.comletedtask) //complete task and all its subtasks
+router.put('/cancelsubtask/:taskid/:subtaskid',verify,subTaskController.subtaskCancel) //cancel subtask
 
 
 module.exports=router
