@@ -13,3 +13,4 @@ router.put('/completedSubTask/:taskid/:subtaskid',verify,subTaskController.subTa
 router.put('/completedAllTasks/:taskid',verify,subTaskController.comletedtask) //complete task and all its subtasks
 router.put('/cancel/:taskid/:subtaskid',verify,subTaskController.subtaskCancel) //cancel subtask
 
+module.exports=router
