@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const calculation = require("../helpers/calculation")
 
 module.exports.insertNewSubTask = async (req, res) => {
+try{
   const { id } = req.params
 
   const task = await Task.findById(id)
@@ -12,20 +13,23 @@ module.exports.insertNewSubTask = async (req, res) => {
   task.save()
   console.log(task)
 
-  res.status(200).json(task)
+  res.status(200).json(task)} catch (error) {
+    console.log(error.message)
+    res.status(500).json({ message: error.message })
+}
 
 }
 
 //done
 module.exports.updateSubTaskByID = async (req, res) => {
 
+ try{
+
   const taskid = req.params.taskid
   const subtaskid = req.params.subtaskid
   const task = await Task.findById(taskid)
 
-  if (task && task.subtasks) {
-
-    const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid) //return array of one object
+const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid) //return array of one object
     //indexed array
 
     console.log(subtask)
@@ -45,22 +49,21 @@ module.exports.updateSubTaskByID = async (req, res) => {
     console.log(task)
     task.save()
 
-    res.status(200).json("found")
+    res.status(200).json("found") }catch (error) {
+      console.log(error.message)
+      res.status(500).json({ message: error.message })
   }
-}
+  }
+
 
 //done
 module.exports.deleteSubTaskByID = async (req, res) => {
 
+try{
   const taskid = req.params.taskid
   const subtaskid = req.params.subtaskid
 
-  console.log(subtaskid)
-
   const task = await Task.findById(taskid)
-
-  if (task && task.subtasks) {
-
     const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid)
 
     console.log(subtask)
@@ -69,14 +72,19 @@ module.exports.deleteSubTaskByID = async (req, res) => {
 
     const utatask = Task.findById(taskid)
     res.status(200).json("done")
+} catch (error) {
+  console.log(error.message)
+  res.status(500).json({ message: error.message })
+}
 
   }
 
-}
+
 
 //completion percentage added 
 module.exports.checksubTasktocomletedtask = async (req, res) => { //call this when check task, convert all sub tasks to completed
 
+  try{
   const { taskid } = req.params
   const task = await Task.findById(taskid)
   const completedsubtasks = await task.subtasks.every(subtask => subtask.completed === 1)
@@ -93,11 +101,17 @@ module.exports.checksubTasktocomletedtask = async (req, res) => { //call this wh
     task.completionPercentage = calcresult
   }
 
-  res.status(500).json("not all sub tasks are completed")
+  res.status(500).json("not all sub tasks are completed") 
+} catch (error) {
+  console.log(error.message)
+  res.status(500).json({ message: error.message })
+}
 }
 
 //completion percentage added 
 module.exports.comletedtask = async (req, res) => {
+ 
+  try{
   const { taskid } = req.params
   const task = await Task.findById(taskid)
 
@@ -125,8 +139,11 @@ module.exports.comletedtask = async (req, res) => {
   task.completionPercentage = 100
   task.completionDate=Date.now();
   task.save()
-  res.status(200).json(task)
-
+  res.status(200).json(task) 
+  }catch (error) {
+    console.log(error.message)
+    res.status(500).json({ message: error.message })
+}
 }
 
 //done
@@ -164,18 +181,21 @@ module.exports.subTaskCompleted = async (req, res) => {
 
 
 module.exports.subtaskCancel = async(req,res)=>{
-
+try{
     const taskid = req.params.taskid
     const subtaskid = req.params.subtaskid
     const task = Task.findById(taskid)
     const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid) //return array of one object
 
     //console.log(subtask)
-    subtask.softdelete = Date.now()
-    subtask.cancelled = "subtask has been cancelled"
+    subtask.status = "cancelled"
 
     task.save()
 
    res.status(200).json(subtask)
+} catch (error) {
+  console.log(error.message)
+  res.status(500).json({ message: error.message })
+}
 }
 
