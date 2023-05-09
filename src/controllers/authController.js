@@ -44,9 +44,6 @@ module.exports.register=async(req,res)=>{
 }
 
 module.exports.login=async (req,res)=>{
-  //validate data before send 
-  const {error}=loginValidation(req.body)
-  if(error)return res.status(400).send(error.details[0].message)
   
   //check if email  exist
   const user= await User.findOne({email: req.body.email})
