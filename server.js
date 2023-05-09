@@ -22,7 +22,7 @@ app.use('/api/task',verify,taskRoute)  //any task route should prefix with api/t
 
 const subtaskRoute = require('./src/reoutes/subtask')
 
-app.use('/api/subtask',verify,subtaskRoute) //anu subtask route should prefix with api/subtask
+app.use('/api/subtask',verify,subtaskRoute) //any subtask route should prefix with api/subtask
 
 
 
