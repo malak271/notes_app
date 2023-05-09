@@ -1,7 +1,5 @@
-const router=require('express').Router()
-const verify=require('../helpers/verifyToken')
-const TaskController=require("../controllers/taskController")
-const subTaskController=require("../controllers/subtaskController")
+const mongoose=require("mongoose");
+//const calculation = require("../")
 
 
 // router.get('/test',verify,(req,res)=>{
@@ -12,16 +10,46 @@ router.post('/store',TaskController.insertNewTask)
 
 router.get('/tasks',TaskController.showAll)
 
-router.get('/show/:id',TaskController.showByID)
+const TaskSchema = mongoose.Schema(
+    {
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+        user_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+        completionPercentage: {
+          type: Number,
+          default: false
+        },
+        // dueDate: Date,
+        completionDate: {type:Date,default:null},
+        subtasks: [subtaskSchema],
+        softdelete : {
+          type : Date,
+          default : null 
+        } ,
 
-router.put('/update/:id',TaskController.updateByID)
+        cancelled : {
+          type : String ,
+          default : null 
+        }
+      
+      },
+      {
+        timestamps: true,
+      },
+);
 
-router.delete('/delete/:id',TaskController.deleteByID)
-router.put('/cancelTask/:id',TaskController.cancelTask) //cancel task
-
-// router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
-
-router.get('/completionPerDay/',TaskController.calculateCompletionPercentagePerDay)
+  
+const Task= mongoose.model("Task", TaskSchema);
+module.exports=Task;
 
 
 module.exports=router
