@@ -19,14 +19,10 @@ const subtaskSchema = mongoose.Schema({
   },
   completionDate: {type:Date,default:null},
 
-  softdelete : {
-    type : Date,
-    default : null 
-  } ,
 
-  cancelled : {
+  status : {
     type : String ,
-    default : null 
+    default : "active" 
   }
 
 
@@ -58,10 +54,10 @@ const TaskSchema = mongoose.Schema(
           default : null 
         } ,
 
-        cancelled : {
-          type : String ,
-          default : null 
-        }
+        status : {
+    type : String ,
+    default : "active" 
+  }
       
       },
       {

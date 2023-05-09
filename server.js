@@ -24,6 +24,11 @@ const taskRoute=require('./src/routes/task')
 app.use('/api/task',verify,taskRoute)  //any task route should prefix with api/task
 
 
+const subtaskRoute = require('./src/reoutes/subtask')
+
+app.use('/api/subtask',verify,subtaskRoute) //any subtask route should prefix with api/subtask
+
+
 // app.use(cors());
 
 

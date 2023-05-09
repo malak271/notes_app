@@ -18,6 +18,8 @@ module.exports.insertNewTask = async (req, res) => {
 module.exports.showAll = async (req, res) => {
     try {
         const tasks = await Task.find({ user_id: req.user._id })
+        
+
         const x = overallCompletionPercentage(tasks)
         // const y= calculateCompletionPercentagePerDay(tasks)
         res.status(200).json({ "tasks": tasks, "OverallCompletionPercentage": x })
@@ -119,13 +121,16 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
 }
 
 module.exports.cancelTask = async(req,res)=>{
+   
+    try{
     const {id} = req.params
     const task = await Task.findById(id)
-
-    task.softdelete = Date.now()
-    task.cancelled = "task has been cancelled"
-
+    task.status = "cancelled"
     task.save()
     res.status(200).json(task)
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: error.message })
+    }
 
 }

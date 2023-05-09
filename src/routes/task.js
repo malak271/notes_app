@@ -1,75 +1,27 @@
-const mongoose=require("mongoose");
-//const calculation = require("../")
+const router=require('express').Router()
+const verify=require('../helpers/verifyToken')
+const TaskController=require("../controllers/taskController")
+const subTaskController=require("../controllers/subtaskController")
 
 
-// subtask schema must be defined before Task schema to reference it 
-const subtaskSchema = mongoose.Schema({
-    // subtaskId: { type: Number, required: true },
-    description: {
-      type: String,
-      required: true,
-    },
-    completed: {
-      type: Number,
-      validate: {
-        validator: function(v) {
-          return v == 0 || v == 1;
-        },
-        message: 'Value must be either 0 or 1'
-      },
-      default:0
-    },
-    completionDate: {type:Date,default:null},
-  
-    softdelete : {
-      type : Date,
-      default : null 
-    } ,
-  
-    cancelled : {
-      type : String ,
-      default : null 
-    }
-  })
+// router.get('/test',verify,(req,res)=>{
+//     res.json(req.user)
+// })
 
-const TaskSchema = mongoose.Schema(
-    {
-        title: {
-          type: String,
-          required: true,
-        },
-        description: {
-          type: String,
-          required: true,
-        },
-        user_id: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
-        completionPercentage: {
-          type: Number,
-          default: false
-        },
-        // dueDate: Date,
-        completionDate: {type:Date,default:null},
-        subtasks: [subtaskSchema],
-        softdelete : {
-          type : Date,
-          default : null 
-        } ,
+router.post('/store',TaskController.insertNewTask)
 
-        cancelled : {
-          type : String ,
-          default : null 
-        }
-      
-      },
-      {
-        timestamps: true,
-      },
-);
+router.get('/tasks',TaskController.showAll)
 
-  
-const Task= mongoose.model("Task", TaskSchema);
-module.exports=Task;
+router.get('/show/:id',TaskController.showByID)
 
+router.put('/update/:id',TaskController.updateByID)
+
+router.delete('/delete/:id',TaskController.deleteByID)
+router.put('/cancelTask/:id',TaskController.cancelTask) //cancel task
+
+// router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
+
+router.get('/completionPerDay/',TaskController.calculateCompletionPercentagePerDay)
+
+
+module.exports=router
