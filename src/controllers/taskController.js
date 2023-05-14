@@ -18,8 +18,6 @@ module.exports.insertNewTask = async (req, res) => {
 module.exports.showAll = async (req, res) => {
     try {
         const tasks = await Task.find({ user_id: req.user._id })
-        
-
         const x = overallCompletionPercentage(tasks)
         // const y= calculateCompletionPercentagePerDay(tasks)
         res.status(200).json({ "tasks": tasks, "OverallCompletionPercentage": x })
@@ -125,7 +123,8 @@ module.exports.cancelTask = async(req,res)=>{
     try{
     const {id} = req.params
     const task = await Task.findById(id)
-    task.status = "cancelled"
+    // task.status = "cancelled"
+    task.softdelete= Date.now()
     task.save()
     res.status(200).json(task)
     } catch (error) {
@@ -134,3 +133,38 @@ module.exports.cancelTask = async(req,res)=>{
     }
 
 }
+
+//completion percentage added 
+module.exports.comletedtask = async (req, res) => {
+ 
+    try{
+    const { taskid } = req.params
+    const task = await Task.findById(taskid)
+  
+    //update every subtask of subtasks
+    const subtaskUpdates = task.subtasks.map(subtask => ({
+      updateMany: {
+        filter: { 'subtasks._id': subtask._id },
+        update: { $set: { 'subtasks.$.completed': 1,'subtasks.$.completionDate': Date.now() } }
+      }
+    }));
+  
+    //update on DB
+    Task.bulkWrite(subtaskUpdates)
+      .then(result => {
+        console.log('Subtasks updated:', result);
+      })
+      .catch(err => {
+        console.error('Error updating subtasks:', err);
+      });
+  
+    task.completionPercentage = 100
+    task.completionDate=Date.now();
+    task.save()
+    res.status(200).json(task) 
+    }catch (error) {
+      console.log(error.message)
+      res.status(500).json({ message: error.message })
+  }
+  }
+  
