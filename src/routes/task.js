@@ -19,7 +19,7 @@ router.delete('/delete/:id',TaskController.deleteByID)
 
 router.put('/cancelTask/:id',TaskController.cancelTask) //cancel task
 
-router.put('/completedTask/:taskid',subTaskController.checksubTasktocomletedtask)//complete task by check completed subtask
+router.put('/completedAllTasks/:taskid',TaskController.comletedtask) //complete task and all its subtasks
 
 // router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
