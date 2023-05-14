@@ -1,5 +1,4 @@
 const router=require('express').Router()
-const verify=require('../helpers/verifyToken')
 const TaskController=require("../controllers/taskController")
 const subTaskController=require("../controllers/subtaskController")
 
@@ -17,7 +16,10 @@ router.get('/show/:id',TaskController.showByID)
 router.put('/update/:id',TaskController.updateByID)
 
 router.delete('/delete/:id',TaskController.deleteByID)
+
 router.put('/cancelTask/:id',TaskController.cancelTask) //cancel task
+
+router.put('/completedTask/:taskid',subTaskController.checksubTasktocomletedtask)//complete task by check completed subtask
 
 // router.get('/taskCompletionPercentage/:id',TaskController.calculateTaskCompletionPercentage)
 
