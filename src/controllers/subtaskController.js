@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const Task = require("../models/Task")
+const Task = require("../models").Task
 const mongoose = require("mongoose");
 const calculation = require("../helpers/calculation")
 

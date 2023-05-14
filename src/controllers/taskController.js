@@ -1,4 +1,5 @@
-const Task = require("../models/Task")
+const Task = require("../models").Task
+
 const { overallCompletionPercentage } = require("../helpers/calculation");
 const { json } = require("express");
 
