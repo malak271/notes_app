@@ -108,43 +108,6 @@ module.exports.checksubTasktocomletedtask = async (req, res) => { //call this wh
 }
 }
 
-//completion percentage added 
-module.exports.comletedtask = async (req, res) => {
- 
-  try{
-  const { taskid } = req.params
-  const task = await Task.findById(taskid)
-
-  //update every subtask of subtasks
-  const subtaskUpdates = task.subtasks.map(subtask => ({
-    updateMany: {
-      filter: { 'subtasks._id': subtask._id },
-      update: { $set: { 'subtasks.$.completed': 1,'subtasks.$.completionDate': Date.now() } }
-    }
-  }));
-
-  //update on DB
-  Task.bulkWrite(subtaskUpdates)
-    .then(result => {
-      console.log('Subtasks updated:', result);
-    })
-    .catch(err => {
-      console.error('Error updating subtasks:', err);
-    });
-
-  // update completion percentage after update all subtasks
-  // const result = calculation.calculateTaskCompletionPercentage(task)
-
-  // console.log(result)
-  task.completionPercentage = 100
-  task.completionDate=Date.now();
-  task.save()
-  res.status(200).json(task) 
-  }catch (error) {
-    console.log(error.message)
-    res.status(500).json({ message: error.message })
-}
-}
 
 //done
 //completion date added 
@@ -188,7 +151,9 @@ try{
     const subtask = await task.subtasks.filter(subtask => subtask._id == subtaskid) //return array of one object
 
     //console.log(subtask)
-    subtask.status = "cancelled"
+    // subtask.status = "cancelled"
+
+    subtask.softdelete= Date.now()
 
     task.save()
 
