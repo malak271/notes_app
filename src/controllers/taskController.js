@@ -74,31 +74,31 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
         // Group the tasks by date
         const tasks = await Task.find({ user_id: req.user._id })
 
-        length=tasks.length
+        length = tasks.length
 
         tasksByDate = tasks.flatMap(item => {
             if (item.subtasks.length == 0 & item.completionPercentage == 100)
-                return [ {
+                return [{
                     "description": item.description,
                     "_id": item._id,
-                    "completionDate":item.completionDate,
-                    "completed":1
-                     }]
+                    "completionDate": item.completionDate,
+                    "completed": 1
+                }]
 
             item.subtasks.forEach(element => {
-                element.completed=1/item.subtasks.length //subtask weight at the level of all tasks
+                element.completed = 1 / item.subtasks.length //subtask weight at the level of all tasks
             });
             return item.subtasks
         });
 
-        tasksByDate=tasksByDate.reduce((acc, task) => {
+        tasksByDate = tasksByDate.reduce((acc, task) => {
             if (task.completionDate == null) return acc;
             const completionDate = task.completionDate.toISOString();
             const dateOnly = completionDate.substring(0, completionDate.indexOf('T'));
             if (!acc[dateOnly]) { //if the date is new add new row to the array
                 acc[dateOnly] = [];
             }
-            acc[dateOnly].push(task); 
+            acc[dateOnly].push(task);
             return acc;
 
         }, {});
@@ -111,7 +111,7 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
             const averageCompletionRate = (totalCompletionRate) / length * 100;
             return { date, averageCompletionRate };
         });
-        
+
         res.status(200).json({ "averageCompletionRatesPerDay": averageCompletionRatesPerDay })
     } catch (error) {
         console.log(error.message)
@@ -119,15 +119,15 @@ module.exports.calculateCompletionPercentagePerDay = async (req, res) => {
     }
 }
 
-module.exports.cancelTask = async(req,res)=>{
-   
-    try{
-    const {id} = req.params
-    const task = await Task.findById(id)
-    // task.status = "cancelled"
-    task.softdelete= Date.now()
-    task.save()
-    res.status(200).json(task)
+module.exports.cancelTask = async (req, res) => {
+
+    try {
+        const { id } = req.params
+        const task = await Task.findById(id)
+        // task.status = "cancelled"
+        task.softdelete = Date.now()
+        task.save()
+        res.status(200).json(task)
     } catch (error) {
         console.log(error.message)
         res.status(500).json({ message: error.message })
@@ -137,35 +137,68 @@ module.exports.cancelTask = async(req,res)=>{
 
 //completion percentage added 
 module.exports.comletedtask = async (req, res) => {
- 
-    try{
-    const { taskid } = req.params
-    const task = await Task.findById(taskid)
-  
-    //update every subtask of subtasks
-    const subtaskUpdates = task.subtasks.map(subtask => ({
-      updateMany: {
-        filter: { 'subtasks._id': subtask._id },
-        update: { $set: { 'subtasks.$.completed': 1,'subtasks.$.completionDate': Date.now() } }
-      }
-    }));
-  
-    //update on DB
-    Task.bulkWrite(subtaskUpdates)
-      .then(result => {
-        console.log('Subtasks updated:', result);
-      })
-      .catch(err => {
-        console.error('Error updating subtasks:', err);
-      });
-  
-    task.completionPercentage = 100
-    task.completionDate=Date.now();
-    task.save()
-    res.status(200).json(task) 
-    }catch (error) {
-      console.log(error.message)
-      res.status(500).json({ message: error.message })
-  }
-  }
-  
+
+    try {
+        const { taskid } = req.params
+        const task = await Task.findById(taskid)
+
+        //update every subtask of subtasks
+        const subtaskUpdates = task.subtasks.map(subtask => ({
+            updateMany: {
+                filter: { 'subtasks._id': subtask._id },
+                update: { $set: { 'subtasks.$.completed': 1, 'subtasks.$.completionDate': Date.now() } }
+            }
+        }));
+
+        //update on DB
+        Task.bulkWrite(subtaskUpdates)
+            .then(result => {
+                console.log('Subtasks updated:', result);
+            })
+            .catch(err => {
+                console.error('Error updating subtasks:', err);
+            });
+
+        task.completionPercentage = 100
+        task.completionDate = Date.now();
+        task.save()
+        res.status(200).json(task)
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: error.message })
+    }
+}
+
+
+module.exports.calcCurrentDayCompletion = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1); // Set the time to the beginning of the next day
+
+        const tasks = await Task.find({
+            createdAt: {
+                $gte: today,
+                $lt: tomorrow,
+            },
+        })
+
+        length = tasks.length
+
+        if(tasks.length == 0)
+            res.status(200).json({ "message": "0 tasks" })
+        
+        const x = tasks.reduce((acc, task) => acc + task.completionPercentage, 0);
+
+        const y = x / length;
+
+        res.status(200).json({ "currentDay": y })
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: error.message })
+    }
+
+}
